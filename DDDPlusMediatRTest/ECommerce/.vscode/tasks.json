@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "ECommerce.API",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/ECommerce.API/ECommerce.API.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+      
+    ]
+}
