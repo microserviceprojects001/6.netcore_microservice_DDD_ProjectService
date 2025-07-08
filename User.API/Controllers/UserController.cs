@@ -32,7 +32,7 @@ public class UserController : BaseController
         }
         return user == null ? NotFound() : Ok(user);
     }
-
+    #region test code
     // can work
     // [HttpPatch]
     // public async Task<IActionResult> Patch([FromBody] JsonPatchDocument<AppUser> patch)
@@ -240,6 +240,7 @@ public class UserController : BaseController
 
     //     return Ok(user);
     // }
+    #endregion
 
     //使用优化后的代码
     [Route("")]
