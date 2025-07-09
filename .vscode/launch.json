@@ -22,7 +22,34 @@
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development" // 强制使用 Development 环境
             }
+        },
+        {
+            "name": "DEBUG .NET Unit Tests",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet",
+            "args": [
+                "test",
+                "${workspaceFolder}/Tests/User.API.UnitTests/User.API.UnitTests.csproj",
+                "--no-build",
+                "--filter",
+                "FullyQualifiedName=User.API.UnitTests.UserControllerUnitTests.Get_ReturnRightUser_WithExpectedParameter",
+                "--logger:console;verbosity=detailed"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "justMyCode": false,
+            "logging": {
+                "engineLogging": true,
+                "trace": true
+            },
+            "requireExactSource": false,
+            "symbolOptions": {
+                "searchPaths": [
+                    "${workspaceFolder}/**/bin/**" // 递归搜索所有 bin 目录
+                ]
+            }
         }
-
     ]
 }
