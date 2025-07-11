@@ -10,6 +10,28 @@
                 "${workspaceFolder}/User.API/User.API.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-tests",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+              "build",
+              "${workspaceFolder}/Tests/User.API.UnitTests/User.API.UnitTests.csproj",
+              "/property:GenerateFullPaths=true",
+              "/p:DebugType=portable"
+            ],
+            "problemMatcher": "$msCompile",
+            "options": {
+              "shell": {
+                "executable": "cmd.exe",
+                "args": ["/c"]
+              }
+            },
+            "group": {
+              "kind": "build",
+              "isDefault": true
+            }
         }
     
       

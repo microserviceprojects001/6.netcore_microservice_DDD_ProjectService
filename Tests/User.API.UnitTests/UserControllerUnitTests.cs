@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using User.API.Data;
 using User.API.Models;
+using FluentAssertions;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace User.API.UnitTests;
 
@@ -15,13 +17,13 @@ public class UserControllerUnitTests
     private Data.UserContext GetUserContext()
     {
         var options = new DbContextOptionsBuilder<Data.UserContext>()
-            .UseInMemoryDatabase(new Guid().ToString())
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
         var UserContext = new Data.UserContext(options);
         UserContext.AppUsers.Add(new Models.AppUser
         {
-            Name = "John Doe",
+            Name = "John",
             Company = "Example Corp",
             Title = "Software Engineer",
             Email = "John@email.com",
@@ -41,17 +43,126 @@ public class UserControllerUnitTests
         return UserContext;
     }
 
-    [Fact]
-    public async Task Get_ReturnRightUser_WithExpectedParameter()
+    private (Controllers.UserController controller, Data.UserContext userContext) GetUserController()
     {
         var context = GetUserContext();
         var loggerMoq = new Mock<ILogger<Controllers.UserController>>();
         var controller = new Controllers.UserController(context, loggerMoq.Object);
-        var response = await controller.Get();
-        Console.WriteLine($"response is: {response}");
-        Assert.IsType(typeof(OkObjectResult), response);
-
+        return (controller: controller, userContext: context);
     }
 
+    [Fact]
+    public async Task Get_ReturnRightUser_WithExpectedParameter()
+    {
+        // Console.WriteLine("等待调试器附加...");
+        // await Task.Delay(30000); // 等待30秒
+        // System.Diagnostics.Debugger.Launch();
+        // System.Diagnostics.Debugger.Break();
 
+
+        // Console.WriteLine("测试方法开始执行");
+        // Console.WriteLine($"当前进程ID: {System.Diagnostics.Process.GetCurrentProcess().Id}");
+
+        (Controllers.UserController controller, Data.UserContext userContext) = GetUserController();
+
+        var response = await controller.Get();
+        Console.WriteLine($"response is: {response}");
+        //Assert.IsType(typeof(OkObjectResult), response);
+
+        var result = response.Should().BeOfType<OkObjectResult>().Subject;
+        var user = result.Value.Should().BeAssignableTo<Models.AppUser>().Subject;
+        user.Id.Should().Be(1);
+        user.Name.Should().Be("John");
+    }
+
+    [Fact]
+    public async Task Patch_ReturnNewNname_WithExpectedNewNameParameter()
+    {
+
+        (Controllers.UserController controller, Data.UserContext userContext) = GetUserController();
+        var document = new JsonPatchDocument<Models.AppUser>();
+        document.Replace(u => u.Name, "NewName");
+        var response = await controller.Patch(document);
+
+        var result = response.Should().BeOfType<OkObjectResult>().Subject;
+
+        //assert response
+        var user = result.Value.Should().BeAssignableTo<Models.AppUser>().Subject;
+        user.Name.Should().Be("NewName");
+
+        // assert name value in ef context
+        var userModel = userContext.AppUsers.SingleOrDefault(u => u.Id == 1);
+        userModel.Should().NotBeNull();
+        userModel.Name.Should().Be("NewName");
+    }
+
+    [Fact]
+    public async Task Patch_ReturnNewProperties_WithExpectedNewProperties()
+    {
+
+        (Controllers.UserController controller, Data.UserContext userContext) = GetUserController();
+        var document = new JsonPatchDocument<Models.AppUser>();
+        document.Replace(u => u.Name, "NewName");
+        var response = await controller.Patch(document);
+
+        var result = response.Should().BeOfType<OkObjectResult>().Subject;
+
+        //assert response
+        var user = result.Value.Should().BeAssignableTo<Models.AppUser>().Subject;
+        user.Name.Should().Be("NewName");
+
+        // assert name value in ef context
+        var userModel = userContext.AppUsers.SingleOrDefault(u => u.Id == 1);
+        userModel.Should().NotBeNull();
+        userModel.Name.Should().Be("NewName");
+    }
+
+    [Fact]
+    public async Task Patch_ReturnNewProperties_WithAddNewProperty()
+    {
+        (Controllers.UserController controller, Data.UserContext userContext) = GetUserController();
+        var document = new JsonPatchDocument<Models.AppUser>();
+        document.Replace(u => u.Properties, new List<Models.UserProperty>
+        {
+            new Models.UserProperty { Key = "fin_industry", Value = "互联网", Text = "互联网" }
+        });
+        var response = await controller.Patch(document);
+
+        var result = response.Should().BeOfType<OkObjectResult>().Subject;
+
+        //assert response
+        var user = result.Value.Should().BeAssignableTo<Models.AppUser>().Subject;
+        user.Properties.Count.Should().Be(1);
+        user.Properties.First().Value.Should().Be("互联网");
+        user.Properties.First().Key.Should().Be("fin_industry");
+
+        // assert name value in ef context
+        var userModel = userContext.AppUsers.SingleOrDefault(u => u.Id == 1);
+        userModel.Properties.Count.Should().Be(1);
+        userModel.Properties.First().Value.Should().Be("互联网");
+        userModel.Properties.First().Key.Should().Be("fin_industry");
+    }
+
+    [Fact]
+    public async Task Patch_ReturnNewProperties_WithRemoveProperty()
+    {
+
+        (Controllers.UserController controller, Data.UserContext userContext) = GetUserController();
+        var document = new JsonPatchDocument<Models.AppUser>();
+        document.Replace(u => u.Properties, new List<Models.UserProperty>
+        {
+
+        });
+        var response = await controller.Patch(document);
+
+        var result = response.Should().BeOfType<OkObjectResult>().Subject;
+
+        //assert response
+        var user = result.Value.Should().BeAssignableTo<Models.AppUser>().Subject;
+        user.Properties.Should().BeEmpty();
+
+        // assert name value in ef context
+        var userModel = userContext.AppUsers.SingleOrDefault(u => u.Id == 1);
+        userModel.Properties.Should().BeEmpty();
+    }
 }

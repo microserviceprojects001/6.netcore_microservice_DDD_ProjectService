@@ -24,32 +24,45 @@
             }
         },
         {
-            "name": "DEBUG .NET Unit Tests",
+            "name": "Debug Unit Tests",
             "type": "coreclr",
             "request": "launch",
-            "program": "dotnet",
+            "program": "${workspaceFolder}/Tests/User.API.UnitTests/bin/Debug/net9.0/User.API.UnitTests.exe",
             "args": [
-                "test",
-                "${workspaceFolder}/Tests/User.API.UnitTests/User.API.UnitTests.csproj",
-                "--no-build",
-                "--filter",
-                "FullyQualifiedName=User.API.UnitTests.UserControllerUnitTests.Get_ReturnRightUser_WithExpectedParameter",
-                "--logger:console;verbosity=detailed"
+              "--filter",
+              "FullyQualifiedName=User.API.UnitTests.UserControllerUnitTests.Get_ReturnRightUser_WithExpectedParameter"
             ],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/Tests/User.API.UnitTests/bin/Debug/net9.0",
             "console": "integratedTerminal",
-            "stopAtEntry": false,
             "justMyCode": false,
-            "logging": {
-                "engineLogging": true,
-                "trace": true
-            },
-            "requireExactSource": false,
             "symbolOptions": {
-                "searchPaths": [
-                    "${workspaceFolder}/**/bin/**" // 递归搜索所有 bin 目录
-                ]
+              "searchPaths": [
+                "${workspaceFolder}/Tests/User.API.UnitTests/bin/Debug/net9.0"
+              ],
+              "loadAll": true
+            },
+            "logging": {
+              "engineLogging": true,
+              "trace": true,
+              "traceResponse": true
+            },
+            "preLaunchTask": "build-tests"
+          },
+          {
+            "name": "Attach to Test Process",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "justMyCode": false,
+            "symbolOptions": {
+              "searchPaths": [
+                "${workspaceFolder}/Tests/User.API.UnitTests/bin/Debug/net9.0"
+              ],
+              "loadAll": true
+            },
+            "logging": {
+              "engineLogging": true
             }
-        }
+          }
     ]
 }
