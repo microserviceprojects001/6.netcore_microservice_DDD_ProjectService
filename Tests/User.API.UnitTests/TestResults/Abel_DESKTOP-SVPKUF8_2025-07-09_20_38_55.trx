@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="817dfc53-5ecd-4a6e-81db-f6514788428e" name="Abel@DESKTOP-SVPKUF8 2025-07-09 20:38:55" runUser="DESKTOP-SVPKUF8\Abel" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-07-09T20:38:55.2941848+08:00" queuing="2025-07-09T20:38:55.2941854+08:00" start="2025-07-09T20:38:52.1647621+08:00" finish="2025-07-09T20:38:55.3068816+08:00" />
+  <TestSettings name="default" id="b4e20abf-b49b-4f1f-aa5f-ea47e306831a">
+    <Deployment runDeploymentRoot="Abel_DESKTOP-SVPKUF8_2025-07-09_20_38_55" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="0b96567e-b98c-4510-8997-00c6e6498685" testId="037fe1a1-62cd-3364-5616-4bc74fcd72d1" testName="User.API.UnitTests.UserControllerUnitTests.Get_ReturnRightUser_WithExpectedParameter" computerName="DESKTOP-SVPKUF8" duration="00:00:01.4601030" startTime="2025-07-09T20:38:55.1317616+08:00" endTime="2025-07-09T20:38:55.1317972+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0b96567e-b98c-4510-8997-00c6e6498685" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="User.API.UnitTests.UserControllerUnitTests.Get_ReturnRightUser_WithExpectedParameter" storage="d:\code\1.microservice\2.netcore_microservice_userservice\tests\user.api.unittests\bin\debug\net9.0\user.api.unittests.dll" id="037fe1a1-62cd-3364-5616-4bc74fcd72d1">
+      <Execution id="0b96567e-b98c-4510-8997-00c6e6498685" />
+      <TestMethod codeBase="D:\Code\1.microservice\2.netcore_microservice_userService\Tests\User.API.UnitTests\bin\Debug\net9.0\User.API.UnitTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="User.API.UnitTests.UserControllerUnitTests" name="Get_ReturnRightUser_WithExpectedParameter" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="037fe1a1-62cd-3364-5616-4bc74fcd72d1" executionId="0b96567e-b98c-4510-8997-00c6e6498685" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="列表中未列出的结果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="所有已加载的结果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 9.0.2)&#xD;
+[xUnit.net 00:00:00.16]   Discovering: User.API.UnitTests&#xD;
+[xUnit.net 00:00:00.22]   Discovered:  User.API.UnitTests&#xD;
+[xUnit.net 00:00:00.23]   Starting:    User.API.UnitTests&#xD;
+[xUnit.net 00:00:01.81]   Finished:    User.API.UnitTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

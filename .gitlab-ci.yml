@@ -1,0 +1,39 @@
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+restore:
+  stage: build
+  tags:
+    - userapi
+  script:
+    - dotnet build
+
+unittest:
+  stage: test
+  tags:
+    - userapi
+  script:
+    - cd Tests/User.API.UnitTests
+    - dotnet test
+
+package:
+  stage: package
+  tags:
+    - userapi
+  script:
+    - cd User.API
+    - pwd
+    - docker build -t userapi:test .
+    - docker login --username=abelliu001 -p ACSdev312!@ registry.cn-hangzhou.aliyuncs.com
+    - docker tag userapi:test registry.cn-hangzhou.aliyuncs.com/microsoftservice/userapi:test
+    - docker push registry.cn-hangzhou.aliyuncs.com/microsoftservice/userapi:test
+
+deploy:
+  stage: deploy
+  tags:
+    - userapi
+  script:
+    - docker run -d -p 8080:80 -p 8443:443  --link UserApiMysql001:db --name userapi001 registry.cn-hangzhou.aliyuncs.com/microsoftservice/userapi:test

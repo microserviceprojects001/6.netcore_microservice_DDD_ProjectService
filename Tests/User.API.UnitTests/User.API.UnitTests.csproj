@@ -45,9 +45,9 @@
   </ItemGroup>
 
   <!-- 添加构建后事件验证符号 -->
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="echo 构建后检查符号文件: $(TargetDir)$(TargetName).pdb" />
     <Exec Command="if exist &quot;$(TargetDir)$(TargetName).pdb&quot; (echo PDB文件存在) else (echo 错误: PDB文件未生成)" />
-  </Target>
+  </Target> -->
   
 </Project>
