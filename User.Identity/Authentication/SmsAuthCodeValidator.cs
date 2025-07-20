@@ -44,7 +44,7 @@ public class SmsAuthCodeValidator : IExtensionGrantValidator
         }
 
         // 4. 检查手机号是否已注册，如果没有注册就创建一个用户
-        int userId = _userService.CheckOrCreate(phone);
+        int userId = await _userService.CheckOrCreate(phone);
         if (userId <= 0)
         {
             context.Result = new GrantValidationResult(

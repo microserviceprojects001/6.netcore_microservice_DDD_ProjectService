@@ -303,13 +303,15 @@ public class UserController : BaseController
     /// </summary>
     [Route("check-or-create")]
     [HttpPatch]
-    public async Task<IActionResult> CheckOrCreate(string phone) 
+    public async Task<IActionResult> CheckOrCreate(string phone)
     {
-        if(! await _context.AppUsers.AnyAsync(u => u.Phone == phone))
+        var user = await _context.AppUsers.SingleOrDefaultAsync(u => u.Phone == phone);
+        if (user == null)
         {
-            _context.AppUsers.Add(new AppUser() { Phone = phone});
+            var user = new AppUser() { Phone = phone };
+            _context.AppUsers.Add(user);
         }
 
-        return Ok();
+        return Ok(user.Id);
     }
 }

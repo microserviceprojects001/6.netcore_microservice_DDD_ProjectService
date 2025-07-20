@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Duende.IdentityServer" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
+    <PackageReference Include="polly" Version="8.6.2" />
   </ItemGroup>
 
 </Project>

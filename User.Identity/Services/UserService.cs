@@ -1,17 +1,38 @@
+using System.Net.Http;
+using System;
+using System.Threading.Tasks;
+
+
 namespace User.Identity.Services;
 
 public class UserService : IUserService
 {
-    public int CheckOrCreate(string phone)
-    {
-        // 模拟检查手机号是否已注册，如果没有注册就创建一个用户
-        // 实际项目中应替换为真实的数据库操作
-        if (string.IsNullOrEmpty(phone))
-        {
-            return 0; // 返回0表示用户创建失败
-        }
+    private HttpClient _httpClient;
+    private readonly string _userServiceUrl = "https://localhost:5201";
 
-        // 模拟返回一个用户ID
-        return new Random().Next(1, 1000); // 返回1到999之间的随机用户ID
+    public UserService(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri(_userServiceUrl);
+    }
+
+    public async Task<int> CheckOrCreate(string phone)
+    {
+        var form = new FormUrlEncodedContent(new[]
+        {
+            new KeyValuePair<string, string>("phone", phone)
+        });
+        var response = await _httpClient.PostAsync($"/api/users/check-or-create", form);
+
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadAsStringAsync();
+            return int.Parse(result);
+        }
+        else
+        {
+            return -1; // 或者抛出异常
+        }
     }
 }
