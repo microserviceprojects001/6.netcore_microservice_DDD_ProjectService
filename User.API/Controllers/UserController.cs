@@ -297,4 +297,19 @@ public class UserController : BaseController
 
         return Ok(user);
     }
+
+    /// <summary>
+    /// 检查或者创建用户(当用户手机号不存在的时候则创建用户)
+    /// </summary>
+    [Route("check-or-create")]
+    [HttpPatch]
+    public async Task<IActionResult> CheckOrCreate(string phone) 
+    {
+        if(! await _context.AppUsers.AnyAsync(u => u.Phone == phone))
+        {
+            _context.AppUsers.Add(new AppUser() { Phone = phone});
+        }
+
+        return Ok();
+    }
 }
