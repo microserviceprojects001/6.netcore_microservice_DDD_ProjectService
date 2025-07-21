@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run User.API",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "User.API", // 关键！调用 tasks.json 中的 "build" 任务
+            "program": "${workspaceFolder}\\bin\\Debug\\net9.0\\User.API.dll", // 直接指定DLL
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "symbolOptions": {
+                "searchPaths": [
+                    "${workspaceFolder}\\bin\\Debug\\net9.0" // 改为单层目录
+                ],
+                "searchMicrosoftSymbolServer": true
+            },
+            "logging": {
+                "moduleLoad": true
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development" // 强制使用 Development 环境
+            }
+        },
+        
+    ]
+}

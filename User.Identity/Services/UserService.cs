@@ -13,7 +13,7 @@ public class UserService : IUserService
     public UserService(HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _httpClient.BaseAddress = new Uri(_userServiceUrl);
+        //_httpClient.BaseAddress = new Uri(_userServiceUrl);
     }
 
     public async Task<int> CheckOrCreate(string phone)
@@ -22,7 +22,7 @@ public class UserService : IUserService
         {
             new KeyValuePair<string, string>("phone", phone)
         });
-        var response = await _httpClient.PostAsync($"/api/users/check-or-create", form);
+        var response = await _httpClient.PostAsync($"{_userServiceUrl}/api/users/check-or-create", form);
 
 
         if (response.IsSuccessStatusCode)

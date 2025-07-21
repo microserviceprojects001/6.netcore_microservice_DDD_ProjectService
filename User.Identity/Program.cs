@@ -1,3 +1,8 @@
+using Duende.IdentityServer;
+using Duende.IdentityServer.Models;
+using User.Identity.Services;
+using System.Net.Http;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +10,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddIdentityServer()
+    .AddExtensionGrantValidator<SmsAuthCodeValidator>() // 添加自定义授权类型验证器
+    .AddDeveloperSigningCredential()
+    .AddInMemoryClients(Config.GetClients())
+    .AddInMemoryIdentityResources(Config.GetIdentityResources())
+    .AddInMemoryApiResources(Config.GetApiResource())
+    .AddInMemoryApiScopes(Config.GetApiScopes());
+
+builder.Services.AddSingleton(new HttpClient());
+builder.Services.AddScoped<IAuthCodeService, TestAuthCodeService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 var app = builder.Build();
 
@@ -14,9 +32,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseIdentityServer();
+
 
 app.MapControllers();
 

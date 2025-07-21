@@ -302,14 +302,33 @@ public class UserController : BaseController
     /// 检查或者创建用户(当用户手机号不存在的时候则创建用户)
     /// </summary>
     [Route("check-or-create")]
-    [HttpPatch]
-    public async Task<IActionResult> CheckOrCreate(string phone)
+    [HttpPost]
+    public async Task<IActionResult> CheckOrCreate([FromForm] string phone)
     {
         var user = await _context.AppUsers.SingleOrDefaultAsync(u => u.Phone == phone);
         if (user == null)
         {
-            var user = new AppUser() { Phone = phone };
+            user = new AppUser()
+            {
+                Phone = phone,
+                Name = "John Doe",
+                Company = "Example Corp",
+                Title = "Software Engineer",
+                Email = "John@email.com",
+                Address = "Dalian, China",
+                Avatar = "default.png", // ✅ 添加这行
+
+                Gender = 1,
+                Tel = "0411-12345678",
+                Province = "Liaoning",
+                ProvinceId = 21,
+                City = "Dalian",
+                CityId = 2102,
+                Properties = new List<UserProperty>(),
+                Age = 111
+            };
             _context.AppUsers.Add(user);
+            await _context.SaveChangesAsync();
         }
 
         return Ok(user.Id);
