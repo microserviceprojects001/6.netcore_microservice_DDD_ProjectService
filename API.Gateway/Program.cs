@@ -7,6 +7,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddAuthentication()
+    .AddJwtBearer("finbook", options =>
+    {
+        options.Authority = "https://localhost:5202";
+        options.RequireHttpsMetadata = true;
+        options.TokenValidationParameters = new()
+        {
+            ValidateAudience = false // 根据你的配置调整
+        };
+    });
 
 builder.Services.AddOcelot();
 builder.Configuration
