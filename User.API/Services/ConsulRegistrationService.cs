@@ -76,6 +76,7 @@ public class ConsulRegistrationService
                     Name = _consulConfig.ServerName,
                     Address = host,
                     Port = port,
+                    Tags = _consulConfig.UseHttps ? new[] { "https" } : Array.Empty<string>(),
                     Check = new AgentServiceCheck
                     {
                         HTTP = $"{scheme}://{host}:{port}/HealthCheck",

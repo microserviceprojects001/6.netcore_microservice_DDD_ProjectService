@@ -2,6 +2,9 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using User.Identity.Services;
 using System.Net.Http;
+using User.Identity.Dtos;
+using Consul;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,13 @@ builder.Services.AddSingleton(new HttpClient());
 builder.Services.AddScoped<IAuthCodeService, TestAuthCodeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.Configure<ServerDiscoveryConfig>(builder.Configuration.GetSection("ServerDiscovery"));
+
+builder.Services.AddSingleton<IConsulClient>(provider =>
+{
+    var config = provider.GetRequiredService<IOptions<ServerDiscoveryConfig>>().Value;
+    return new ConsulClient(cfg => cfg.Address = new Uri(config.Consul.HttpEndpoint));
+});
 
 var app = builder.Build();
 
