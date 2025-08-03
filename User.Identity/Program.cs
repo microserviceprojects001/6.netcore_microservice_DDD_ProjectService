@@ -5,6 +5,8 @@ using System.Net.Http;
 using User.Identity.Dtos;
 using Consul;
 using Microsoft.Extensions.Options;
+using Resilience;
+using User.Identity.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +24,22 @@ builder.Services.AddIdentityServer()
     .AddInMemoryApiResources(Config.GetApiResource())
     .AddInMemoryApiScopes(Config.GetApiScopes());
 
-builder.Services.AddSingleton(new HttpClient());
+builder.Services.AddSingleton(typeof(ResilienceClientFactory), sp =>
+{
+    var logger = sp.GetRequiredService<ILogger<ResilienceHttplicent>>();
+    var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+    var retryCount = 5;
+    var exceptionCountAllowedBeforeBreaking = 3;
+
+    return new ResilienceClientFactory(logger, httpContextAccessor, retryCount, exceptionCountAllowedBeforeBreaking);
+});
+//注册全局单例IHttpClient
+builder.Services.AddSingleton<IHttpClient>(sp =>
+{
+
+    return sp.GetRequiredService<ResilienceClientFactory>().GetResilienceHttplicent();
+});
+
 builder.Services.AddScoped<IAuthCodeService, TestAuthCodeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 

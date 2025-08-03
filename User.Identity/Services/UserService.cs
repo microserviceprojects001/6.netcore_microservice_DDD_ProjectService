@@ -4,23 +4,27 @@ using System.Threading.Tasks;
 using Consul;
 using User.Identity.Dtos;
 using Microsoft.Extensions.Options;
+using Resilience;
 
 namespace User.Identity.Services;
 
 public class UserService : IUserService
 {
-    private readonly HttpClient _httpClient;
+    private readonly IHttpClient _httpClient;
     private readonly IConsulClient _consulClient;
     private readonly ServerDiscoveryConfig _options;
     private readonly string _userServiceUrl = "https://localhost:5201";
+    private readonly ILogger<UserService> _logger;
     public UserService(
-          HttpClient httpClient,
+          IHttpClient httpClient,
           IConsulClient consulClient,
-          IOptions<ServerDiscoveryConfig> options)
+          IOptions<ServerDiscoveryConfig> options,
+          ILogger<UserService> logger)
     {
         _httpClient = httpClient;
         _consulClient = consulClient;
         _options = options.Value;
+        _logger = logger;
     }
 
     public async Task<int> CheckOrCreate(string phone)
@@ -39,21 +43,26 @@ public class UserService : IUserService
             Host = service.Service.Address,
             Port = service.Service.Port,
             Path = "/api/users/check-or-create"
-        }.Uri;
+        }.ToString();
 
-        var form = new FormUrlEncodedContent(new[]
+        var form = new Dictionary<string, string>
+            {
+                { "phone", phone }
+            };
+        try
         {
-            new KeyValuePair<string, string>("phone", phone)
-        });
-
-        var response = await _httpClient.PostAsync(uri, form);
-
-        if (response.IsSuccessStatusCode)
-        {
-            var result = await response.Content.ReadAsStringAsync();
-            return int.Parse(result);
+            var response = await _httpClient.PostAsync(uri, form);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                return int.Parse(result);
+            }
         }
-
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling check-or-create");
+            throw ex;
+        }
         return -1;
     }
 }
