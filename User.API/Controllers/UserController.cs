@@ -305,6 +305,8 @@ public class UserController : BaseController
     [HttpPost]
     public async Task<IActionResult> CheckOrCreate([FromForm] string phone)
     {
+        //return StatusCode(500, "模拟服务端错误");
+
         var user = await _context.AppUsers.SingleOrDefaultAsync(u => u.Phone == phone);
         if (user == null)
         {
