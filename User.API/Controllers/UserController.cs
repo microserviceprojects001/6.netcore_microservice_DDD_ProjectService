@@ -335,4 +335,52 @@ public class UserController : BaseController
 
         return Ok(user.Id);
     }
+
+    /// <summary>
+    /// 获取用户标签选项数据
+    /// </summary>
+    /// <returns></returns>
+
+    [HttpGet]
+    [Route("tags")]
+    public async Task<IActionResult> GetUserTags()
+    {
+        return Ok(await _context.UserTags.AsNoTracking().Where(ut => ut.UserId == UserIdentity.UserId).ToListAsync());
+    }
+
+    /// <summary>
+    /// 根据手机号搜索用户
+    /// </summary>
+    /// <param name="phone"></param>
+    /// <returns></returns>
+    /// 
+    [HttpPost]
+    [Route("search")]
+    public async Task<IActionResult> Search(string phone)
+    {
+        return Ok(await _context.AppUsers.AsNoTracking().Include(u => u.Properties).SingleOrDefaultAsync(u => u.Phone == phone));
+    }
+
+    /// <summary>
+    /// 更新用户标签
+    /// </summary>
+    /// <param name="tags"></param>
+    /// <returns></returns>
+    [HttpPut]
+    [Route("tags")]
+    public async Task<IActionResult> UpdateUserTags([FromBody] List<string> tags)
+    {
+        var originTags = await _context.UserTags.Where(ut => ut.UserId == UserIdentity.UserId).ToListAsync();
+
+        var newTags = tags.Except(originTags.Select(ot => ot.Tag)).ToList();
+
+        await _context.UserTags.AddRangeAsync(newTags.Select(nt => new UserTag()
+        {
+            CreateTime = DateTime.Now,
+            UserId = UserIdentity.UserId,
+            Tag = nt
+        }));
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
 }
