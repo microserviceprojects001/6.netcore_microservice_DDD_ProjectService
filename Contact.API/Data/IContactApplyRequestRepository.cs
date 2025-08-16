@@ -1,6 +1,8 @@
 using Contact.API.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+
 
 namespace Contact.API.Data;
 
@@ -11,19 +13,19 @@ public interface IContactApplyRequestRepository
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    Task<bool> AddRequestAsync(ContactApplyRequest request);
+    Task<bool> AddRequestAsync(ContactApplyRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 通过好友请求
     /// </summary>
     /// <param name="applierId"></param>
     /// <returns></returns>
-    Task<bool> ApprovalAsync(int applierId);
+    Task<bool> ApprovalAsync(int userId, int applierId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 好友申请列表
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    Task<bool> GetRequestListAsync(int userId);
+    Task<List<ContactApplyRequest>> GetRequestListAsync(int userId, CancellationToken cancellationToken = default);
 }

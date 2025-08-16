@@ -1,7 +1,14 @@
 namespace Contact.API.Models;
 
+/// <summary>
+/// 好友
+/// </summary>
 public class Contact
 {
+    public Contact()
+    {
+        Tags = new List<string>();
+    }
     /// <summary>
     /// 用户Id
     /// </summary>
@@ -26,6 +33,8 @@ public class Contact
     /// 用户头像
     /// </summary>
     public string Avatar { get; set; }
-
-
+    /// <summary>
+    /// 用户标签
+    /// </summary>
+    public List<string> Tags { get; set; }
 }
