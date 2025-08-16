@@ -6,7 +6,7 @@ using Contact.API.Services;
 namespace Contact.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/contacts")]
 public class ContactController : BaseController
 {
 
@@ -31,7 +31,7 @@ public class ContactController : BaseController
     }
 
     [HttpPut]
-    [Route("tag")]
+    [Route("tags")]
     public async Task<IActionResult> TagContact([FromBody] TagContactInputViewModel viewModel, CancellationToken cancellationToken)
     {
         var result = await _contactRepository.TagContactAsync(UserIdentity.UserId, viewModel.ContactId, viewModel.Tags, cancellationToken);

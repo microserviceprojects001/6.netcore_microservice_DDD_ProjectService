@@ -16,7 +16,6 @@
         "AllowedScopes": [] 
       }
     },
-   
     {
       "DownstreamPathTemplate": "/connect/token",
       "DownstreamScheme": "https",
@@ -28,7 +27,45 @@
       ],
       "UpstreamPathTemplate": "/connect/token",
       "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/contacts",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5204
+        }
+      ],
+      "UpstreamPathTemplate": "/contacts",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/contacts/tags",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5204
+        }
+      ],
+      "UpstreamPathTemplate": "/contacts/tags",
+      "UpstreamHttpMethod": [ "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/contacts/apply-requests",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5204
+        }
+      ],
+      "UpstreamPathTemplate": "/contacts/apply-requests",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
     }
+    
+    
   ],
   "GlobalConfiguration": {
     "BaseUrl": "https://localhost:5203"
