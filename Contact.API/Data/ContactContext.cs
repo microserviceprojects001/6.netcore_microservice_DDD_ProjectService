@@ -23,6 +23,9 @@ public class ContactContext
 
     }
 
+    /// <summary>
+    /// 用户的通讯录
+    /// </summary>
     public IMongoCollection<ContactBook> ContactBooks
     {
         get
@@ -35,7 +38,9 @@ public class ContactContext
             return _contactBooks;
         }
     }
-
+    /// <summary>
+    /// 好友申请请求记录
+    /// </summary>
     public IMongoCollection<ContactApplyRequest> ContactApplyRequests
     {
         get

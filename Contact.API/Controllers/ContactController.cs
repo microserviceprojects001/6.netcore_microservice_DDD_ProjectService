@@ -32,7 +32,7 @@ public class ContactController : BaseController
 
     [HttpPut]
     [Route("tag")]
-    public async Task<IActionResult> TagContact(TagContactInputViewModel viewModel, CancellationToken cancellationToken)
+    public async Task<IActionResult> TagContact([FromBody] TagContactInputViewModel viewModel, CancellationToken cancellationToken)
     {
         var result = await _contactRepository.TagContactAsync(UserIdentity.UserId, viewModel.ContactId, viewModel.Tags, cancellationToken);
         if (result)
@@ -94,6 +94,9 @@ public class ContactController : BaseController
 
     /// <summary>
     /// 通过好友请求
+    /// 此时我作为 被申请人，接受了申请人的好友请求
+    /// 也就是我当前登录的用户，接受了另一个用户的好友请求
+    /// 审批通过之后，需要互相加上联系人
     /// </summary>
     /// <returns></returns>
 
