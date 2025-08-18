@@ -15,6 +15,7 @@ public class MongoContactRepository : IContactRepository
 
     public MongoContactRepository(ContactContext contactContext)
     {
+        Console.WriteLine($"[{DateTime.Now}] MongoContactRepository 构造函数执行");
         _contactContext = contactContext;
         //_contacts = contactContext.GetCollection<BaseUserInfo>("Contacts");
     }
@@ -138,7 +139,7 @@ public class MongoContactRepository : IContactRepository
         if (contactBook == null)
         {
             // log
-            return null;
+            return new List<Contact.API.Models.Contact>();
         }
         return contactBook.Contacts;
     }

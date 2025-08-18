@@ -11,6 +11,7 @@ public class MongoContactApplyRequestRepository : IContactApplyRequestRepository
     private readonly ContactContext _contactContext;
     public MongoContactApplyRequestRepository(ContactContext contactContext)
     {
+        Console.WriteLine($"[{DateTime.Now}] MongoContactApplyRequestRepository 构造函数执行");
         _contactContext = contactContext;
 
     }

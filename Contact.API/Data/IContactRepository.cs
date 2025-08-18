@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using Contact.API.Dtos;
 using Contact.API.Models;
 using System.Collections.Generic;
+
+namespace Contact.API.Data;
+
 public interface IContactRepository
 {
     /// <summary>

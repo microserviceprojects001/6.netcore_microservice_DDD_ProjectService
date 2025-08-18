@@ -13,6 +13,8 @@ public class ContactContext
 
     public ContactContext(IOptionsMonitor<AppSettings> appSettings)
     {
+        Console.WriteLine($"[{DateTime.Now}] ContactContext 构造函数执行");
+
         _appSettings = appSettings.CurrentValue; // 通过 CurrentValue 访问
 
         var client = new MongoClient(_appSettings.MongoContactConnectionString);

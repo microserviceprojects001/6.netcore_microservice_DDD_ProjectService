@@ -18,6 +18,7 @@ public class ContactController : BaseController
                                 IUserService userService,
                                 IContactRepository contactRepository)
     {
+        Console.WriteLine($"[{DateTime.Now}] ContactController 构造函数执行");
         _contactApplyRequestRepository = contactApplyRequestRepository;
         _userService = userService;
         _contactRepository = contactRepository;

@@ -22,6 +22,16 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "Contact.API",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Contact.API/Contact.API.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "build-tests",
             "command": "dotnet",
             "type": "process",
