@@ -5,6 +5,7 @@ using Consul;
 using User.Identity.Dtos;
 using Microsoft.Extensions.Options;
 using Resilience;
+using Newtonsoft.Json;
 
 namespace User.Identity.Services;
 
@@ -27,7 +28,7 @@ public class UserService : IUserService
         _logger = logger;
     }
 
-    public async Task<int> CheckOrCreate(string phone)
+    public async Task<UserInfo> CheckOrCreate(string phone)
     {
         // 从Consul获取服务地址
         var services = await _consulClient.Health.Service(_options.UserServiceName, tag: null, passingOnly: true);
@@ -55,7 +56,9 @@ public class UserService : IUserService
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
-                return int.Parse(result);
+                var userInfo = JsonConvert.DeserializeObject<UserInfo>(result);
+                _logger.LogInformation($"Completed check-or-create with userID: {userInfo.Id}");
+                return userInfo;
             }
         }
         catch (Exception ex)
@@ -63,6 +66,6 @@ public class UserService : IUserService
             _logger.LogError(ex, "Error calling check-or-create");
             throw ex;
         }
-        return -1;
+        return null;
     }
 }

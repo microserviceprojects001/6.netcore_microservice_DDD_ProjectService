@@ -333,7 +333,7 @@ public class UserController : BaseController
             await _context.SaveChangesAsync();
         }
 
-        return Ok(user.Id);
+        return Ok(new { user.Id, user.Name, user.Avatar, user.Company, user.Title });
     }
 
     /// <summary>

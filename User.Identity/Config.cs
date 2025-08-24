@@ -8,9 +8,9 @@ public class Config
     {
         return new List<ApiResource>
         {
-            new ApiResource("userApi", "user api service")
+            new ApiResource("gateway_api", "user api service")
             {
-                Scopes = { "userApi" }  // 关联到 ApiScope
+                Scopes = { "gateway_api" }  // 关联到 ApiScope
             }
         };
     }
@@ -20,7 +20,7 @@ public class Config
     {
         return new List<ApiScope>
         {
-            new ApiScope("userApi", "My API Scope")  // 必须和 AllowedScopes 中的名称一致
+            new ApiScope("gateway_api", "My API Scope")  // 必须和 AllowedScopes 中的名称一致
         };
     }
 
@@ -40,7 +40,7 @@ public class Config
                 AllowedGrantTypes =  new List<string> { "sms_code" }, // 使用自定义的授权类型
                 AllowedScopes =
                 {
-                    "userApi",
+                    "gateway_api",
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess, // 允许离线访问

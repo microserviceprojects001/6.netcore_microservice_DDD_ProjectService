@@ -12,10 +12,8 @@ builder.Services.AddAuthentication()
     {
         options.Authority = "https://localhost:5202";
         options.RequireHttpsMetadata = true;
-        options.TokenValidationParameters = new()
-        {
-            ValidateAudience = false // 根据你的配置调整
-        };
+        options.Audience = "gateway_api"; // 确保这里的 Audience 与 Config.cs 中的 ApiResource 名称一致
+
     });
 
 builder.Services.AddOcelot();

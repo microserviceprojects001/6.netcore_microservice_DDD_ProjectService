@@ -11,6 +11,7 @@
     <PackageReference Include="dnsclient" Version="1.8.0" />
     <PackageReference Include="Duende.IdentityServer" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="polly" Version="8.6.2" />
   </ItemGroup>
 

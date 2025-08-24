@@ -1,3 +1,5 @@
+using User.Identity.Dtos;
+
 namespace User.Identity.Services;
 
 public interface IUserService
@@ -6,5 +8,5 @@ public interface IUserService
     /// 检查手机号是否已注册吗，如果没有注册话就注册一个用户
     /// 手机号
     /// </summary>
-    Task<int> CheckOrCreate(string phone);
+    Task<UserInfo> CheckOrCreate(string phone);
 }

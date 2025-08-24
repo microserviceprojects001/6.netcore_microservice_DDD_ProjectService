@@ -7,6 +7,9 @@ using Consul;
 using Microsoft.Extensions.Options;
 using Resilience;
 using User.Identity.Infrastructure;
+using Duende.IdentityServer.Models;
+using Duende.IdentityServer.Services;
+using User.Identity.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +53,7 @@ builder.Services.AddSingleton<IConsulClient>(provider =>
     var config = provider.GetRequiredService<IOptions<ServerDiscoveryConfig>>().Value;
     return new ConsulClient(cfg => cfg.Address = new Uri(config.Consul.HttpEndpoint));
 });
-
+builder.Services.AddScoped<IProfileService, ProfileService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

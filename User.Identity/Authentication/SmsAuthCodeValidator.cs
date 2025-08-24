@@ -44,8 +44,8 @@ public class SmsAuthCodeValidator : IExtensionGrantValidator
         }
 
         // 4. 检查手机号是否已注册，如果没有注册就创建一个用户
-        int userId = await _userService.CheckOrCreate(phone);
-        if (userId <= 0)
+        var userInfo = await _userService.CheckOrCreate(phone);
+        if (userInfo == null)
         {
             context.Result = new GrantValidationResult(
                             TokenRequestErrors.InvalidGrant,
@@ -53,10 +53,18 @@ public class SmsAuthCodeValidator : IExtensionGrantValidator
             return;
         }
 
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, userInfo.Name ?? string.Empty),
+            new Claim("name", userInfo.Name ?? string.Empty),
+            new Claim("company", userInfo.Company ?? string.Empty),
+            new Claim("title", userInfo.Title ?? string.Empty),
+            new Claim("avatar", userInfo.Avatar ?? string.Empty),
+        };
         context.Result = new GrantValidationResult(
-            subject: userId.ToString(),
+            subject: userInfo.Id.ToString(),
             authenticationMethod: GrantType,
-            claims: new[] { new Claim(ClaimTypes.Name, phone) }
+            claims: claims
         );
     }
 }
