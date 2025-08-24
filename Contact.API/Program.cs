@@ -2,10 +2,27 @@ using Contact.API.Data;
 using Microsoft.Extensions.Options;
 using Contact.API;
 using Contact.API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer; // 添加这个
+using Microsoft.IdentityModel.Tokens; // 添加这个
+using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// 清除默认的声明类型映射
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://localhost:5203"; // 网关地址
+        options.RequireHttpsMetadata = true; // 开发环境可以设为false
+        options.Audience = "contact_api";
+        // options.TokenValidationParameters = new TokenValidationParameters
+        // {
+        //     ValidateIssuer = true,
+        //     ValidIssuer = "https://localhost:5203"
+        // };
+    });
 
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -38,7 +55,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+// 添加认证中间件
+app.UseAuthentication(); // 必须在 UseAuthorization 之前
+//app.UseAuthorization();
 
 app.MapControllers();
 

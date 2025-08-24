@@ -17,7 +17,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/connect/token",
+      "DownstreamPathTemplate": "/.well-known/{catchAll}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -25,8 +25,20 @@
           "Port": 5202
         }
       ],
-      "UpstreamPathTemplate": "/connect/token",
-      "UpstreamHttpMethod": [ "POST" ]
+      "UpstreamPathTemplate": "/.well-known/{catchAll}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+     {
+      "DownstreamPathTemplate": "/connect/{catchAll}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5202
+        }
+      ],
+      "UpstreamPathTemplate": "/connect/{catchAll}",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/contacts",
@@ -38,7 +50,11 @@
         }
       ],
       "UpstreamPathTemplate": "/contacts",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "finbook",
+        "AllowedScopes": [ "contact_api" ]
+      }
     },
     {
       "DownstreamPathTemplate": "/api/contacts/tags",
@@ -50,7 +66,11 @@
         }
       ],
       "UpstreamPathTemplate": "/contacts/tags",
-      "UpstreamHttpMethod": [ "PUT" ]
+      "UpstreamHttpMethod": [ "PUT" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "finbook",
+        "AllowedScopes":[ "contact_api" ]
+      }
     },
     {
       "DownstreamPathTemplate": "/api/contacts/apply-requests",
@@ -62,9 +82,13 @@
         }
       ],
       "UpstreamPathTemplate": "/contacts/apply-requests",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "finbook",
+        "AllowedScopes":[ "contact_api" ]
+      }
     }
-    
+
     
   ],
   "GlobalConfiguration": {

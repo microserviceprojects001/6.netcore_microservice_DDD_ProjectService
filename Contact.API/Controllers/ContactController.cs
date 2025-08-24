@@ -115,8 +115,8 @@ public class ContactController : BaseController
         var applier = await _userService.GetBaseUserInfoAsync(applierId, cancellationToken);
         var userinfo = await _userService.GetBaseUserInfoAsync(UserIdentity.UserId, cancellationToken);
 
-        _contactRepository.AddContactAsync(UserIdentity.UserId, userinfo, cancellationToken);
-        _contactRepository.AddContactAsync(applierId, applier, cancellationToken);
+        _contactRepository.AddContactAsync(UserIdentity.UserId, applier, cancellationToken);
+        _contactRepository.AddContactAsync(applierId, userinfo, cancellationToken);
 
         return Ok();
     }
