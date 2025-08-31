@@ -2,28 +2,65 @@ using Contact.API.Data;
 using Microsoft.Extensions.Options;
 using Contact.API;
 using Contact.API.Dtos;
+using Consul;
+using Resilience;
+using Newtonsoft.Json;
 
 namespace Contact.API.Services;
 
 public class UserService : IUserService
 {
-    private readonly IContactRepository _contactRepository;
-    private readonly IOptions<AppSettings> _appSettings;
-
-    public UserService(IContactRepository contactRepository, IOptions<AppSettings> appSettings)
+    private readonly IHttpClient _httpClient;
+    private readonly IConsulClient _consulClient;
+    private readonly ServerDiscoveryConfig _options;
+    //private readonly string _userServiceUrl = "https://localhost:5201";
+    private readonly ILogger<UserService> _logger;
+    public UserService(
+          IHttpClient httpClient,
+          IConsulClient consulClient,
+          IOptions<ServerDiscoveryConfig> options,
+          ILogger<UserService> logger)
     {
-        _contactRepository = contactRepository;
-        _appSettings = appSettings;
+        _httpClient = httpClient;
+        _consulClient = consulClient;
+        _options = options.Value;
+        _logger = logger;
     }
-
     // Implement methods to interact with the contact repository
-    public async Task<BaseUserInfo> GetBaseUserInfoAsync(int userId, CancellationToken cancellationToken = default)
+    public async Task<UserIdentity> GetBaseUserInfoAsync(int userId)
     {
-        return new BaseUserInfo
+        // 从Consul获取服务地址
+        var services = await _consulClient.Health.Service(_options.UserServiceName, tag: null, passingOnly: true);
+        var service = services.Response.FirstOrDefault();
+        if (service == null)
         {
-            UserId = userId,
+            throw new Exception($"No healthy instances of {_options.UserServiceName} found");
+        }
 
+        var uri = new UriBuilder
+        {
+            Scheme = service.Service.Tags.Contains("https") ? "https" : "http",
+            Host = service.Service.Address,
+            Port = service.Service.Port,
+            Path = $"/api/users/baseinfo/{userId}"
+        }.ToString();
 
-        };
+        try
+        {
+            var response = await _httpClient.GetStringAsync(uri);
+            if (string.IsNullOrEmpty(response))
+            {
+                return null;
+            }
+            var userInfo = JsonConvert.DeserializeObject<UserIdentity>(response);
+            _logger.LogInformation($"Completed check-or-create with userID: {userInfo.UserId}");
+            return userInfo;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling check-or-create");
+            throw ex;
+        }
+        return null;
     }
 }

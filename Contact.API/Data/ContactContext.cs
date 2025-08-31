@@ -47,7 +47,7 @@ public class ContactContext
     {
         get
         {
-            CheckAndCreateCollection("ContactBooks");
+            CheckAndCreateCollection("ContactApplyRequests");
             return _database.GetCollection<ContactApplyRequest>("ContactApplyRequests");
         }
     }

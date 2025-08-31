@@ -18,17 +18,26 @@ public class MongoContactApplyRequestRepository : IContactApplyRequestRepository
 
     public async Task<bool> AddRequestAsync(ContactApplyRequest request, CancellationToken cancellationToken = default)
     {
+        // 检查是否已取消
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return false;
+        }
+
         var filter = Builders<ContactApplyRequest>.Filter.Where(r => r.UserId == request.UserId && r.ApplierId == request.ApplierId);
 
-        if ((await _contactContext.ContactApplyRequests.CountAsync(filter, null, cancellationToken)) > 0)
+        // 使用 CountDocumentsAsync 而不是 CountAsync（已过时）
+        var count = await _contactContext.ContactApplyRequests.CountDocumentsAsync(filter, null, cancellationToken);
+
+        if (count > 0)
         {
             var update = Builders<ContactApplyRequest>.Update
                 .Set(r => r.ApplyTime, DateTime.Now);
 
-            //var options = new UpdateOptions { IsUpsert = true };
             var result = await _contactContext.ContactApplyRequests.UpdateOneAsync(filter, update, null, cancellationToken);
-            return result.MatchedCount == 1 && result.MatchedCount == result.ModifiedCount;
+            return result.MatchedCount == 1;
         }
+
         await _contactContext.ContactApplyRequests.InsertOneAsync(request, null, cancellationToken);
         return true;
     }

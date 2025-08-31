@@ -14,7 +14,7 @@ public class UserService : IUserService
     private readonly IHttpClient _httpClient;
     private readonly IConsulClient _consulClient;
     private readonly ServerDiscoveryConfig _options;
-    private readonly string _userServiceUrl = "https://localhost:5201";
+    //private readonly string _userServiceUrl = "https://localhost:5201";
     private readonly ILogger<UserService> _logger;
     public UserService(
           IHttpClient httpClient,

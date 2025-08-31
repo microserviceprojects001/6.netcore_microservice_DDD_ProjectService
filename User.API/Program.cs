@@ -6,6 +6,9 @@ using Consul;
 using User.API.Dtos;
 using Microsoft.Extensions.Options;
 using User.API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer; // 添加这个
+using Microsoft.IdentityModel.Tokens; // 添加这个
+using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +41,21 @@ builder.Services.AddSingleton<ConsulRegistrationService>();
 
 builder.Services.AddHealthChecks();
 
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://localhost:5203"; // 网关地址
+        options.RequireHttpsMetadata = true; // 开发环境可以设为false
+        options.Audience = "user_api";
+        // options.TokenValidationParameters = new TokenValidationParameters
+        // {
+        //     ValidateIssuer = true,
+        //     ValidIssuer = "https://localhost:5203"
+        // };
+    });
+
 var app = builder.Build();
 
 // 初始化数据库
@@ -50,6 +68,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/HealthCheck");

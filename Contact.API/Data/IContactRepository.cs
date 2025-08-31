@@ -14,7 +14,7 @@ public interface IContactRepository
     /// <param name="userInfo"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<bool> UpdateContactInfoAsync(BaseUserInfo userInfo, CancellationToken cancellationToken = default);
+    Task<bool> UpdateContactInfoAsync(UserIdentity userInfo, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 添加联系人信息
@@ -22,7 +22,7 @@ public interface IContactRepository
     /// <param name="contact"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<bool> AddContactAsync(int userId, BaseUserInfo contact, CancellationToken cancellationToken = default);
+    Task<bool> AddContactAsync(int userId, UserIdentity contact, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取联系人列表

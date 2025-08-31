@@ -13,5 +13,5 @@ public interface IUserService
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    Task<BaseUserInfo> GetBaseUserInfoAsync(int userId, CancellationToken cancellationToken = default);
+    Task<UserIdentity> GetBaseUserInfoAsync(int userId);
 }

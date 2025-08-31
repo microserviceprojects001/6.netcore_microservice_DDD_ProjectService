@@ -5,6 +5,12 @@ using Contact.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer; // 添加这个
 using Microsoft.IdentityModel.Tokens; // 添加这个
 using System.IdentityModel.Tokens.Jwt;
+using Contact.API.Dtos;
+using Consul;
+using Microsoft.Extensions.Options;
+using Resilience;
+using Contact.API.Infrastructure;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +21,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.Authority = "https://localhost:5203"; // 网关地址
-        options.RequireHttpsMetadata = true; // 开发环境可以设为false
+        options.RequireHttpsMetadata = true;
         options.Audience = "contact_api";
+        options.SaveToken = true;
         // options.TokenValidationParameters = new TokenValidationParameters
         // {
         //     ValidateIssuer = true,
@@ -44,6 +51,31 @@ builder.Services.AddScoped<IContactApplyRequestRepository, MongoContactApplyRequ
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddControllers();
+
+builder.Services.Configure<ServerDiscoveryConfig>(builder.Configuration.GetSection("ServerDiscovery"));
+
+builder.Services.AddSingleton<IConsulClient>(provider =>
+{
+    var config = provider.GetRequiredService<IOptions<ServerDiscoveryConfig>>().Value;
+    return new ConsulClient(cfg => cfg.Address = new Uri(config.Consul.HttpEndpoint));
+});
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton(typeof(ResilienceClientFactory), sp =>
+{
+    var logger = sp.GetRequiredService<ILogger<ResilienceHttplicent>>();
+    var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+    var retryCount = 5;
+    var exceptionCountAllowedBeforeBreaking = 3;
+
+    return new ResilienceClientFactory(logger, httpContextAccessor, retryCount, exceptionCountAllowedBeforeBreaking);
+});
+//注册全局单例IHttpClient
+builder.Services.AddSingleton<IHttpClient>(sp =>
+{
+
+    return sp.GetRequiredService<ResilienceClientFactory>().GetResilienceHttplicent();
+});
 
 var app = builder.Build();
 

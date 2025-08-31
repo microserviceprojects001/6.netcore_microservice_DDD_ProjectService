@@ -27,6 +27,7 @@ builder.Services.AddIdentityServer()
     .AddInMemoryApiResources(Config.GetApiResource())
     .AddInMemoryApiScopes(Config.GetApiScopes());
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton(typeof(ResilienceClientFactory), sp =>
 {
     var logger = sp.GetRequiredService<ILogger<ResilienceHttplicent>>();
@@ -53,6 +54,7 @@ builder.Services.AddSingleton<IConsulClient>(provider =>
     var config = provider.GetRequiredService<IOptions<ServerDiscoveryConfig>>().Value;
     return new ConsulClient(cfg => cfg.Address = new Uri(config.Consul.HttpEndpoint));
 });
+
 builder.Services.AddScoped<IProfileService, ProfileService>();
 var app = builder.Build();
 

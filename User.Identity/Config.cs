@@ -15,7 +15,10 @@ public class Config
             new ApiResource("contact_api", "contact service")
             {
                 Scopes = { "contact_api" }
-            }
+            },
+             new ApiResource("user_api", "user api") {
+                Scopes = { "user_api" }
+             }
         };
     }
 
@@ -25,7 +28,8 @@ public class Config
         return new List<ApiScope>
         {
             new ApiScope("gateway_api", "My API Scope"),  // 必须和 AllowedScopes 中的名称一致
-            new ApiScope("contact_api", "my contact scope")
+            new ApiScope("contact_api", "my contact scope"),
+            new ApiScope("user_api", "user_api scope")
         };
     }
 
@@ -47,6 +51,7 @@ public class Config
                 {
                     "gateway_api",
                     "contact_api",
+                    "user_api",
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess, // 允许离线访问

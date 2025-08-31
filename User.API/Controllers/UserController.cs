@@ -383,4 +383,28 @@ public class UserController : BaseController
         await _context.SaveChangesAsync();
         return Ok();
     }
+
+    [HttpGet]
+    [Route("baseinfo/{userId}")]
+    public async Task<ActionResult> GetBaseInfo(int userId)
+    {
+        // TBD检查用户是否是好友关系
+
+        var user = await _context.AppUsers.SingleOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(
+            new
+            {
+                UserId = user.Id,
+                user.Name,
+                user.Company,
+                user.Title,
+                user.Avatar
+            }
+        );
+    }
 }

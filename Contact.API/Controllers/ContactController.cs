@@ -57,14 +57,15 @@ public class ContactController : BaseController
 
     /// <summary>
     /// 添加好友请求
+    /// AddApplyRequest 这个行为的动作是，申请人触发的，
     /// </summary>
     /// <returns></returns>
 
     [HttpPost]
-    [Route("apply-requests")]
+    [Route("apply-requests/{userId}")]
     public async Task<IActionResult> AddApplyRequest(int userId, CancellationToken cancellationToken = default)
     {
-        var userBaseInfo = await _userService.GetBaseUserInfoAsync(userId, cancellationToken);
+        var userBaseInfo = await _userService.GetBaseUserInfoAsync(userId);
         if (userBaseInfo == null)
         {
             throw new Exception("获取用户信息失败");
@@ -95,14 +96,14 @@ public class ContactController : BaseController
 
     /// <summary>
     /// 通过好友请求
-    /// 此时我作为 被申请人，接受了申请人的好友请求
+    /// 此时我作为 被申请人，我点击了接受了请求
     /// 也就是我当前登录的用户，接受了另一个用户的好友请求
     /// 审批通过之后，需要互相加上联系人
     /// </summary>
     /// <returns></returns>
 
     [HttpPut]
-    [Route("apply-requests")]
+    [Route("apply-requests/{applierId}")]
     public async Task<IActionResult> ApprovalRequestAsync(int applierId, CancellationToken cancellationToken = default)
     {
         var result = await _contactApplyRequestRepository.ApprovalAsync(UserIdentity.UserId, applierId, cancellationToken); //就是谁申请人的id
@@ -112,8 +113,8 @@ public class ContactController : BaseController
         {
             return StatusCode(500, "通过好友请求失败");
         }
-        var applier = await _userService.GetBaseUserInfoAsync(applierId, cancellationToken);
-        var userinfo = await _userService.GetBaseUserInfoAsync(UserIdentity.UserId, cancellationToken);
+        var applier = await _userService.GetBaseUserInfoAsync(applierId);
+        var userinfo = await _userService.GetBaseUserInfoAsync(UserIdentity.UserId);
 
         _contactRepository.AddContactAsync(UserIdentity.UserId, applier, cancellationToken);
         _contactRepository.AddContactAsync(applierId, userinfo, cancellationToken);

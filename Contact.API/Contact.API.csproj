@@ -7,10 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="consul" Version="1.7.14.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
     <PackageReference Include="MongoDB.Driver" Version="3.4.2" />
+    <PackageReference Include="polly" Version="8.6.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks\Resilience\Resilience.csproj" />
+  </ItemGroup>
 </Project>

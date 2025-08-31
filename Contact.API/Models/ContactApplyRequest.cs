@@ -1,12 +1,15 @@
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 namespace Contact.API.Models;
 
 /// <summary>
 /// 用户发起请求申请好友过来，用户UI看到一个列表 同意或者拒绝，同意之后会把Requestor信息作为contact保存到 ContactBook中
 /// </summary>
+[BsonIgnoreExtraElements]
 public class ContactApplyRequest
 {
     /// <summary>
-    /// 被添加的用户Id
+    /// 被申请的用户Id
     /// </summary>
     public int UserId { get; set; }
 

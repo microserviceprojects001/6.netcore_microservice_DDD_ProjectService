@@ -39,7 +39,7 @@ public class ResilienceHttplicent : IHttpClient
         string authorizationMethod = "Bearer")
     {
         Func<HttpRequestMessage> requestMessageFunc = () => CreateRequestMessage(HttpMethod.Post, url, item);
-        return await DoPostAsync(HttpMethod.Post, url, requestMessageFunc, authorizationToken, requestid, authorizationMethod);
+        return await DoRequestAsync(HttpMethod.Post, url, requestMessageFunc, authorizationToken, requestid, authorizationMethod);
     }
 
     public async Task<HttpResponseMessage> PostAsync(
@@ -50,10 +50,10 @@ public class ResilienceHttplicent : IHttpClient
         string authorizationMethod = "Bearer")
     {
         Func<HttpRequestMessage> requestMessageFunc = () => CreateRequestMessage(HttpMethod.Post, url, form);
-        return await DoPostAsync(HttpMethod.Post, url, requestMessageFunc, authorizationToken, requestid, authorizationMethod);
+        return await DoRequestAsync(HttpMethod.Post, url, requestMessageFunc, authorizationToken, requestid, authorizationMethod);
     }
 
-    private async Task<HttpResponseMessage> DoPostAsync(
+    private async Task<HttpResponseMessage> DoRequestAsync(
         HttpMethod method,
         string url,
         Func<HttpRequestMessage> requestMessageFunc,
@@ -145,5 +145,42 @@ public class ResilienceHttplicent : IHttpClient
         {
             requestMessage.Headers.Add("Authorization", new List<string> { authorizationHeader });
         }
+    }
+
+    public async Task<string> GetStringAsync(string url, string authorizationToken = null, string authorizationMethod = "Bearer")
+    {
+        var origin = GetOriginFromUri(new Uri(url));
+
+        // 使用 HttpInvoker 获取 HttpResponseMessage
+        var response = await HttpInvoker(origin, async () =>
+        {
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+            SetAuthorizationHeader(requestMessage);
+
+            if (authorizationToken != null)
+            {
+                requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+                    authorizationMethod, authorizationToken);
+            }
+
+            var response = await _httpClient.SendAsync(requestMessage);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"Request to {url} failed with status code {response.StatusCode}");
+                // 返回 HttpResponseMessage 而不是 null
+                return response;
+            }
+            // 始终返回 HttpResponseMessage
+            return response;
+        });
+
+        // 在获取响应后读取字符串内容
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<HttpResponseMessage> PutAsync<T>(string url, T item, string authorizationToken = null, string requestid = null, string authorizationMethod = "Bearer")
+    {
+        Func<HttpRequestMessage> requestMessageFunc = () => CreateRequestMessage(HttpMethod.Put, url, item);
+        return await DoRequestAsync(HttpMethod.Put, url, requestMessageFunc, authorizationToken, requestid, authorizationMethod);
     }
 }

@@ -65,7 +65,7 @@ public class MongoContactRepository : IContactRepository
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public async Task<bool> UpdateContactInfoAsync(BaseUserInfo userInfo, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateContactInfoAsync(UserIdentity userInfo, CancellationToken cancellationToken = default)
     {
         var contactBook = await _contactContext.ContactBooks
                                                 .Find(cb => cb.UserId == userInfo.UserId)
@@ -92,7 +92,7 @@ public class MongoContactRepository : IContactRepository
         return result.ModifiedCount > 0;
     }
 
-    public async Task<bool> AddContactAsync(int userId, BaseUserInfo contact, CancellationToken cancellationToken = default)
+    public async Task<bool> AddContactAsync(int userId, UserIdentity contact, CancellationToken cancellationToken = default)
     {
         if (_contactContext.ContactBooks.CountDocuments(cb => cb.UserId == userId) == 0)
         {
