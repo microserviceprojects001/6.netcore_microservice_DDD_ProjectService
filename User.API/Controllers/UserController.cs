@@ -388,7 +388,12 @@ public class UserController : BaseController
     [Route("baseinfo/{userId}")]
     public async Task<ActionResult> GetBaseInfo(int userId)
     {
+        //此处只是验证能否接受到token， contact api发过来的token，接受成功，
+        var userIdentity = UserIdentity;
+        _logger.LogInformation($"GetBaseInfo userId:{userId}, current userId:{userIdentity.UserId}");
+
         // TBD检查用户是否是好友关系
+
 
         var user = await _context.AppUsers.SingleOrDefaultAsync(u => u.Id == userId);
         if (user == null)

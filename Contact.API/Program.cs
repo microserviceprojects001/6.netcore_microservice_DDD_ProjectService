@@ -20,7 +20,7 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = "https://localhost:5203"; // 网关地址
+        options.Authority = "https://localhost:5203"; // 需要是网关地址
         options.RequireHttpsMetadata = true;
         options.Audience = "contact_api";
         options.SaveToken = true;

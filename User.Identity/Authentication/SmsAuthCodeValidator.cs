@@ -52,10 +52,10 @@ public class SmsAuthCodeValidator : IExtensionGrantValidator
                             "验证用户错误");
             return;
         }
-
+        // claims 只加到这里返回还不行，还不能加入到token里面去，需要定义ProfileService
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, userInfo.Name ?? string.Empty),
+            new Claim(ClaimTypes.Name, userInfo.Name ?? string.Empty), //这里不能是null 赋值
             new Claim("name", userInfo.Name ?? string.Empty),
             new Claim("company", userInfo.Company ?? string.Empty),
             new Claim("title", userInfo.Title ?? string.Empty),

@@ -32,8 +32,10 @@
         "AllowedScopes": ["user_api"] 
       }
     },
+     //identityserver需要保留信息 token认证啥的 ，
+     // contact.api需要拿到这些信息.well-known/openid-configuration, 需要模糊匹配转发
     {
-      "DownstreamPathTemplate": "/.well-known/{catchAll}",
+      "DownstreamPathTemplate": "/.well-known/{catchAll}", 
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -44,6 +46,7 @@
       "UpstreamPathTemplate": "/.well-known/{catchAll}",
       "UpstreamHttpMethod": [ "GET" ]
     },
+    //.well-known/openid-configuration 这里有认证授权的，所以也用了模糊转发
     {
       "DownstreamPathTemplate": "/connect/{catchAll}",
       "DownstreamScheme": "https",
@@ -54,7 +57,7 @@
         }
       ],
       "UpstreamPathTemplate": "/connect/{catchAll}",
-      "UpstreamHttpMethod": [ "GET", "POST" ]
+      "UpstreamHttpMethod": [ "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/contacts",
@@ -85,7 +88,7 @@
       "UpstreamHttpMethod": [ "PUT" ]
     },
     {
-      "DownstreamPathTemplate": "/api/contacts/apply-requests/{catchAll}",
+      "DownstreamPathTemplate": "/api/contacts/apply-requests/{catchAll}", //因为有[Route("apply-requests/{userId}")]这样的路由
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -94,7 +97,7 @@
         }
       ],
       "UpstreamPathTemplate": "/contacts/apply-requests/{catchAll}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ],
+      "UpstreamHttpMethod": [ "POST", "PUT" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "finbook",
         "AllowedScopes": [ "contact_api" ]
