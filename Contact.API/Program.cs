@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens; // 添加这个
 using System.IdentityModel.Tokens.Jwt;
 using Contact.API.Dtos;
 using Consul;
-using Microsoft.Extensions.Options;
 using Resilience;
 using Contact.API.Infrastructure;
 
@@ -22,7 +21,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.Authority = "https://localhost:5203"; // 需要是网关地址
         options.RequireHttpsMetadata = true;
-        options.Audience = "contact_api";
+        options.Audience = "contactResource";
         options.SaveToken = true;
         // options.TokenValidationParameters = new TokenValidationParameters
         // {
@@ -77,6 +76,36 @@ builder.Services.AddSingleton<IHttpClient>(sp =>
     return sp.GetRequiredService<ResilienceClientFactory>().GetResilienceHttplicent();
 });
 
+// ... existing code ...
+
+// ... existing code ...
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("contactResource", policy =>
+      policy.RequireAssertion(context =>
+      {
+          var audienceClaims = context.User.FindAll(c => c.Type == "aud");
+          return audienceClaims.Any(c => c.Value == "contactResource");
+      }));
+
+    options.AddPolicy("Contact.Read", policy =>
+        policy.RequireScope("contact.read", "contact.manage", "contact.admin"));
+
+    options.AddPolicy("Contact.Write", policy =>
+        policy.RequireScope("contact.write", "contact.manage", "contact.admin"));
+
+    options.AddPolicy("Contact.Manage", policy =>
+        policy.RequireScope("contact.manage", "contact.admin"));
+
+    options.AddPolicy("Contact.Admin", policy =>
+        policy.RequireScope("contact.admin"));
+});
+
+// ... rest of code ...
+
+// ... rest of code ...
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -89,7 +118,7 @@ app.UseHttpsRedirection();
 
 // 添加认证中间件
 app.UseAuthentication(); // 必须在 UseAuthorization 之前
-//app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapControllers();
 

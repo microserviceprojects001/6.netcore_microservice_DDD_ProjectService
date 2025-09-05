@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Contact.API.Models;
 using Contact.API.Data;
 using Contact.API.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Contact.API.Controllers;
 
 [ApiController]
 [Route("api/contacts")]
+[Authorize("contactResource")] // 添加 API 资源级别的认证
 public class ContactController : BaseController
 {
 
@@ -26,6 +28,7 @@ public class ContactController : BaseController
 
     [HttpGet]
     [Route("")]
+    [Authorize(Policy = "Contact.Read")]
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
         return Ok(await _contactRepository.GetContactsAsync(UserIdentity.UserId, cancellationToken));

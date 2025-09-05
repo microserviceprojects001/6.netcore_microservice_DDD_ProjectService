@@ -12,9 +12,14 @@ public class Config
             {
                 Scopes = { "gateway_api" }  // 关联到 ApiScope
             },
-            new ApiResource("contact_api", "contact service")
+            new ApiResource("contactResource", "Contact Management Service")  // 使用您自定义的名称
             {
-                Scopes = { "contact_api" }
+                Scopes = {
+                    "contact.read",         // 读取联系人权限
+                    "contact.write",        // 写入联系人权限
+                    "contact.manage",       // 管理联系人权限
+                    "contact.admin"         // 管理员权限
+                }
             },
              new ApiResource("user_api", "user api") {
                 Scopes = { "user_api" }
@@ -28,7 +33,10 @@ public class Config
         return new List<ApiScope>
         {
             new ApiScope("gateway_api", "My API Scope"),  // 必须和 AllowedScopes 中的名称一致
-            new ApiScope("contact_api", "my contact scope"),
+            new ApiScope("contact.read", "Read contacts"),
+            new ApiScope("contact.write", "Write contacts"),
+            new ApiScope("contact.manage", "Manage contacts"),
+            new ApiScope("contact.admin", "Admin contacts"),
             new ApiScope("user_api", "user_api scope")
         };
     }
@@ -50,8 +58,11 @@ public class Config
                 AllowedScopes =
                 {
                     "gateway_api",
-                    "contact_api",
                     "user_api",
+                    "contact.read",         // 读取权限
+                    "contact.write",        // 写入权限
+                    "contact.manage",       // 管理权限
+                    "contact.admin",        // 管理员权限
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess, // 允许离线访问

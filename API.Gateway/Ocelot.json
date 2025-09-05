@@ -71,8 +71,10 @@
       "UpstreamPathTemplate": "/contacts",
       "UpstreamHttpMethod": [ "GET" ],
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "finbook",
-        "AllowedScopes": [ "contact_api" ]
+        "AuthenticationProviderKey": "finbook"
+      },
+      "RouteClaimsRequirement": {
+        "scope": "contact.read"  
       }
     },
     {
