@@ -1,6 +1,8 @@
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Test;
+using IdentityModel;
+
 public class Config
 {
     // 定义 API 资源
@@ -15,6 +17,7 @@ public class Config
             new ApiResource("contactResource", "Contact Management Service")  // 使用您自定义的名称
             {
                 Scopes = {
+                    "contact_api",
                     "contact.read",         // 读取联系人权限
                     "contact.write",        // 写入联系人权限
                     "contact.manage",       // 管理联系人权限
@@ -33,6 +36,7 @@ public class Config
         return new List<ApiScope>
         {
             new ApiScope("gateway_api", "My API Scope"),  // 必须和 AllowedScopes 中的名称一致
+            new ApiScope("contact_api", "Contact API Scope"),
             new ApiScope("contact.read", "Read contacts"),
             new ApiScope("contact.write", "Write contacts"),
             new ApiScope("contact.manage", "Manage contacts"),
@@ -59,12 +63,14 @@ public class Config
                 {
                     "gateway_api",
                     "user_api",
+                    "contact_api",
                     "contact.read",         // 读取权限
                     "contact.write",        // 写入权限
                     "contact.manage",       // 管理权限
                     "contact.admin",        // 管理员权限
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
+                    "role", // 直接使用字符串 "role"
                     IdentityServerConstants.StandardScopes.OfflineAccess, // 允许离线访问
                 },
             }
@@ -77,7 +83,8 @@ public class Config
         return new List<IdentityResource>
         {
             new IdentityResources.OpenId(),
-            new IdentityResources.Profile()
+            new IdentityResources.Profile(),
+            new IdentityResource("role", "Your role(s)", new[] { JwtClaimTypes.Role }) // 正确的方式定义角色身份资源
         };
     }
 

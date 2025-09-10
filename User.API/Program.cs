@@ -56,6 +56,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         // };
     });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("user_api", policy =>
+      policy.RequireAssertion(context =>
+      {
+          var audienceClaims = context.User.FindAll(c => c.Type == "aud");
+          return audienceClaims.Any(c => c.Value == "contactResource");
+      }));
+
+});
+
 var app = builder.Build();
 
 // 初始化数据库

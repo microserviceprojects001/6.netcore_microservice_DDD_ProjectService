@@ -3,11 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using User.API.Data;
 using User.API.Models;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace User.API.Controllers;
 
 [ApiController]
 [Route("api/users")]
+
 public class UserController : BaseController
 {
     private ILogger<UserController> _logger;

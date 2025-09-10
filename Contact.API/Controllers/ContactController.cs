@@ -107,6 +107,7 @@ public class ContactController : BaseController
 
     [HttpPut]
     [Route("apply-requests/{applierId}")]
+    [Authorize(Policy = "Contact.Write")]
     public async Task<IActionResult> ApprovalRequestAsync(int applierId, CancellationToken cancellationToken = default)
     {
         var result = await _contactApplyRequestRepository.ApprovalAsync(UserIdentity.UserId, applierId, cancellationToken); //就是谁申请人的id

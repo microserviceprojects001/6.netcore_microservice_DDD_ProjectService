@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Duende.IdentityServer.Models;
 using User.Identity.Services;
+using IdentityModel;
 
 public class SmsAuthCodeValidator : IExtensionGrantValidator
 {
@@ -61,6 +62,9 @@ public class SmsAuthCodeValidator : IExtensionGrantValidator
             new Claim("title", userInfo.Title ?? string.Empty),
             new Claim("avatar", userInfo.Avatar ?? string.Empty),
         };
+
+        claims.Add(new Claim(JwtClaimTypes.Role, "ContactAdmin"));
+
         context.Result = new GrantValidationResult(
             subject: userInfo.Id.ToString(),
             authenticationMethod: GrantType,

@@ -88,18 +88,48 @@ builder.Services.AddAuthorization(options =>
           var audienceClaims = context.User.FindAll(c => c.Type == "aud");
           return audienceClaims.Any(c => c.Value == "contactResource");
       }));
+    // ========== 保留现有的基于Scope的策略 ==========
+    // options.AddPolicy("Contact.Read", policy =>
+    //     policy.RequireScope("contact.read", "contact.manage", "contact.admin"));
 
-    options.AddPolicy("Contact.Read", policy =>
-        policy.RequireScope("contact.read", "contact.manage", "contact.admin"));
-
-    options.AddPolicy("Contact.Write", policy =>
-        policy.RequireScope("contact.write", "contact.manage", "contact.admin"));
+    // options.AddPolicy("Contact.Write", policy =>
+    //     policy.RequireScope("contact.write", "contact.manage", "contact.admin"));
 
     options.AddPolicy("Contact.Manage", policy =>
         policy.RequireScope("contact.manage", "contact.admin"));
 
     options.AddPolicy("Contact.Admin", policy =>
         policy.RequireScope("contact.admin"));
+
+    // ========== 新增基于角色的策略 ==========
+    options.AddPolicy("Contact.Read.Role", policy =>
+        policy.RequireRole("ContactAdmin", "ContactManager", "ContentEditor", "ContactViewer"));
+
+    options.AddPolicy("Contact.Write.Role", policy =>
+        policy.RequireRole("ContactAdmin", "ContactManager", "ContentEditor"));
+
+    options.AddPolicy("Contact.Manage.Role", policy =>
+        policy.RequireRole("ContactAdmin", "ContactManager"));
+
+    options.AddPolicy("Contact.Admin.Role", policy =>
+        policy.RequireRole("ContactAdmin"));
+
+    // ========== 混合策略：同时满足Scope和Role要求 ==========
+    options.AddPolicy("Contact.Read", policy =>
+        policy.RequireAssertion(context =>
+        {
+            var hasScope = context.User.HasScope("contact.read", "contact.manage", "contact.admin");
+            var hasRole = context.User.IsInRole("ContactAdmin", "ContactManager", "ContentEditor", "ContactViewer");
+            return hasScope && hasRole; // 必须同时满足
+        }));
+
+    options.AddPolicy("Contact.Write", policy =>
+        policy.RequireAssertion(context =>
+        {
+            var hasScope = context.User.HasScope("contact.write", "contact.manage", "contact.admin");
+            var hasRole = context.User.IsInRole("ContactAdmin", "ContactManager", "ContentEditor");
+            return hasScope && hasRole;
+        }));
 });
 
 // ... rest of code ...
