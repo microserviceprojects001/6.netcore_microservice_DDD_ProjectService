@@ -73,6 +73,22 @@ public class Config
                     "role", // 直接使用字符串 "role"
                     IdentityServerConstants.StandardScopes.OfflineAccess, // 允许离线访问
                 },
+            },
+            // 新增的服务间通信客户端
+            new Client
+            {
+                ClientId = "contact_service_client",
+                ClientName = "Contact Service Client",
+                ClientSecrets = { new Secret("contact_service_secret".Sha256()) },
+                AllowedGrantTypes = { "client_credentials" },
+                AllowedScopes = { "user_api" }, // 只能访问user_api
+                Claims =
+                {
+                    new Claim("client_type", "microservice"),
+                    new Claim("service_name", "Contact.API")
+                },
+                AccessTokenLifetime = 3600, // 1小时
+                AllowOfflineAccess = false // 不需要刷新令牌
             }
 
         };

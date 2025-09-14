@@ -1,6 +1,7 @@
 using MongoDB.Driver;
 using Contact.API.Models;
 using Microsoft.Extensions.Options;
+using Contact.API.Configuration;
 
 namespace Contact.API.Data;
 

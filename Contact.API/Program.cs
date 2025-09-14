@@ -9,7 +9,7 @@ using Contact.API.Dtos;
 using Consul;
 using Resilience;
 using Contact.API.Infrastructure;
-
+using Contact.API.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +37,8 @@ builder.Services.AddOpenApi();
 // 1. 配置AppSettings绑定
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
+builder.Services.Configure<ClientSettings>(builder.Configuration.GetSection("ClientSettings"));
+
 // 2. 注册MongoDB Context（单例模式）
 builder.Services.AddSingleton<ContactContext>(provider =>
 {
@@ -48,6 +50,9 @@ builder.Services.AddSingleton<ContactContext>(provider =>
 builder.Services.AddScoped<IContactRepository, MongoContactRepository>();
 builder.Services.AddScoped<IContactApplyRequestRepository, MongoContactApplyRequestRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+
+
 
 builder.Services.AddControllers();
 
@@ -75,7 +80,9 @@ builder.Services.AddSingleton<IHttpClient>(sp =>
 
     return sp.GetRequiredService<ResilienceClientFactory>().GetResilienceHttplicent();
 });
-
+// client token service test
+//builder.Services.AddScoped<IServiceTokenProvider, ServiceTokenProvider>();
+builder.Services.AddScoped<IClientAuthTestService, ClientAuthTestService>();
 // ... existing code ...
 
 // ... existing code ...
@@ -135,6 +142,8 @@ builder.Services.AddAuthorization(options =>
 // ... rest of code ...
 
 // ... rest of code ...
+// 修改为使用应用生命周期事件注册
+builder.Services.AddSingleton<ConsulRegistrationService>();
 
 var app = builder.Build();
 
@@ -151,5 +160,38 @@ app.UseAuthentication(); // 必须在 UseAuthorization 之前
 app.UseAuthorization();
 
 app.MapControllers();
+
+// 使用应用生命周期事件触发注册
+//ASP.NET Core 在创建主机时自动注册了 IHostApplicationLifetime
+var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+var consulService = app.Services.GetRequiredService<ConsulRegistrationService>();
+
+lifetime.ApplicationStarted.Register(async () =>
+{
+    try
+    {
+        Console.WriteLine("应用已完全启动");
+        await consulService.RegisterAsync(lifetime.ApplicationStopping);
+    }
+    catch (Exception ex)
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Consul 注册失败");
+    }
+});
+
+lifetime.ApplicationStopping.Register(async () =>
+{
+    try
+    {
+        Console.WriteLine("应用正在停止...");
+        await consulService.DeregisterAsync(lifetime.ApplicationStopping);
+    }
+    catch (Exception ex)
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Consul 注销失败");
+    }
+});
 
 app.Run();

@@ -67,6 +67,18 @@ builder.Services.AddAuthorization(options =>
 
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    // 添加一个要求 user_api scope 的策略
+    options.AddPolicy("RequireUserApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "user_api");
+    });
+
+    // 其他策略...
+});
+
 var app = builder.Build();
 
 // 初始化数据库

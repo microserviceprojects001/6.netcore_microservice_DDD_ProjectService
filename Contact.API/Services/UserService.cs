@@ -1,10 +1,11 @@
 using Contact.API.Data;
 using Microsoft.Extensions.Options;
 using Contact.API;
-using Contact.API.Dtos;
+using Contact.API.Configuration;
 using Consul;
 using Resilience;
 using Newtonsoft.Json;
+using Contact.API.Dtos;
 
 namespace Contact.API.Services;
 

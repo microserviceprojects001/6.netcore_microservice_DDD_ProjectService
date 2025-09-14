@@ -1,5 +1,5 @@
 
-namespace Contact.API;
+namespace Contact.API.Configuration;
 
 public class AppSettings
 {

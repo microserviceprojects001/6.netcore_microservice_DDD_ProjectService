@@ -1,11 +1,14 @@
 using System.Net;
 
-namespace Contact.API.Dtos;
+namespace Contact.API.Configuration;
 
 public class ServerDiscoveryConfig
 {
     public bool UseHttps { get; set; }
+
     public string UserServiceName { get; set; }
+    public string ContactServiceName { get; set; }
+    public string IdentityServiceName { get; set; }
     public ConsulConfig Consul { get; set; }
 }
 
