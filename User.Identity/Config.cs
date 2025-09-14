@@ -2,6 +2,7 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Test;
 using IdentityModel;
+using System.Security.Claims;
 
 public class Config
 {
@@ -82,11 +83,11 @@ public class Config
                 ClientSecrets = { new Secret("contact_service_secret".Sha256()) },
                 AllowedGrantTypes = { "client_credentials" },
                 AllowedScopes = { "user_api" }, // 只能访问user_api
-                Claims =
-                {
-                    new Claim("client_type", "microservice"),
-                    new Claim("service_name", "Contact.API")
-                },
+                // Claims =
+                // {
+                //     new Claim("client_type", "microservice"),
+                //     new Claim("service_name", "Contact.API")
+                // },
                 AccessTokenLifetime = 3600, // 1小时
                 AllowOfflineAccess = false // 不需要刷新令牌
             }

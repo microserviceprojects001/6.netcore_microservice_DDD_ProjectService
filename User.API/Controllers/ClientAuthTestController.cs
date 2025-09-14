@@ -8,6 +8,7 @@ namespace User.API.Controllers
 {
     [ApiController]
     [Route("api/test/client-auth")]
+    [Authorize("user_api")]
     public class ClientAuthTestController : ControllerBase
     {
         [HttpGet("public")]
@@ -15,6 +16,7 @@ namespace User.API.Controllers
         {
             return Ok(new
             {
+
                 Message = "这是一个公共端点，不需要认证",
                 Timestamp = DateTime.UtcNow
             });

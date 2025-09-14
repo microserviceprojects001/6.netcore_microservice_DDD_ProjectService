@@ -58,25 +58,29 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(options =>
 {
+    //编译阶段就加载执行了
+    // options.AddPolicy("RequireUserApiScope", policy =>
+    //     {
+    //         policy.RequireAuthenticatedUser();
+    //         policy.RequireClaim("scope", "user_api");
+    //     });
     options.AddPolicy("user_api", policy =>
       policy.RequireAssertion(context =>
       {
           var audienceClaims = context.User.FindAll(c => c.Type == "aud");
-          return audienceClaims.Any(c => c.Value == "contactResource");
+          return audienceClaims.Any(c => c.Value == "user_api");
       }));
 
-});
-
-builder.Services.AddAuthorization(options =>
-{
-    // 添加一个要求 user_api scope 的策略
     options.AddPolicy("RequireUserApiScope", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.RequireClaim("scope", "user_api");
-    });
+       policy.RequireAssertion(context =>
+       {
+           // 修正：直接从 User 中获取 scope 声明
+           var scopeClaims = context.User.FindAll(c => c.Type == "scope");
+           var userScopes = scopeClaims.SelectMany(c => c.Value.Split(' ')).ToList();
 
-    // 其他策略...
+           // 检查是否包含 user_api scope
+           return userScopes.Contains("user_api");
+       }));
 });
 
 var app = builder.Build();

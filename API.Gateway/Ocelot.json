@@ -120,6 +120,23 @@
         "AuthenticationProviderKey": "finbook",
         "AllowedScopes": [ "contact_api" ]
       }
+    },
+    // client  auth test
+    {
+      "DownstreamPathTemplate": "/api/test/client-auth/{catchAll}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5204
+        }
+      ],
+      "UpstreamPathTemplate": "/contacts/test/client-auth/{catchAll}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "finbook",
+        "AllowedScopes": [ "contact_api" ]
+      }
     }
   ],
   "GlobalConfiguration": {

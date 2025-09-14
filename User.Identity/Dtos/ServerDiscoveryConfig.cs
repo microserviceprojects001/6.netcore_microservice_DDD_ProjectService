@@ -5,6 +5,7 @@ public class ServerDiscoveryConfig
 {
     public bool UseHttps { get; set; }
     public string UserServiceName { get; set; }
+    public string IdentityServiceName { get; set; }
     public ConsulConfig Consul { get; set; }
 }
 
