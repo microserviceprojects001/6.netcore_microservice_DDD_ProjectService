@@ -71,16 +71,18 @@ builder.Services.AddAuthorization(options =>
           return audienceClaims.Any(c => c.Value == "user_api");
       }));
 
-    options.AddPolicy("RequireUserApiScope", policy =>
-       policy.RequireAssertion(context =>
-       {
-           // 修正：直接从 User 中获取 scope 声明
-           var scopeClaims = context.User.FindAll(c => c.Type == "scope");
-           var userScopes = scopeClaims.SelectMany(c => c.Value.Split(' ')).ToList();
+    options.AddPolicy("RequireInternalAccess", policy =>
+    policy.RequireAssertion(context =>
+    {
+        // 检查scope
+        var scopeClaims = context.User.FindAll(c => c.Type == "scope");
+        var userScopes = scopeClaims.SelectMany(c => c.Value.Split(' ')).ToList();
+        if (!userScopes.Contains("user_api.internal"))
+            return false;
 
-           // 检查是否包含 user_api scope
-           return userScopes.Contains("user_api");
-       }));
+        // 检查客户端类型
+        return context.User.HasClaim("client_client_type", "microservice");
+    }));
 });
 
 var app = builder.Build();

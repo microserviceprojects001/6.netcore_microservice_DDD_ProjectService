@@ -26,7 +26,7 @@ public class Config
                 }
             },
              new ApiResource("user_api", "user api") {
-                Scopes = { "user_api" }
+                Scopes = { "user_api", "user_api.internal" }
              }
         };
     }
@@ -42,7 +42,8 @@ public class Config
             new ApiScope("contact.write", "Write contacts"),
             new ApiScope("contact.manage", "Manage contacts"),
             new ApiScope("contact.admin", "Admin contacts"),
-            new ApiScope("user_api", "user_api scope")
+            new ApiScope("user_api", "user_api scope"),
+            new ApiScope("user_api.internal", "Internal user API for service-to-service communication")
         };
     }
 
@@ -82,14 +83,20 @@ public class Config
                 ClientName = "Contact Service Client",
                 ClientSecrets = { new Secret("contact_service_secret".Sha256()) },
                 AllowedGrantTypes = { "client_credentials" },
-                AllowedScopes = { "user_api" }, // 只能访问user_api
-                // Claims =
-                // {
-                //     new Claim("client_type", "microservice"),
-                //     new Claim("service_name", "Contact.API")
-                // },
+
+                AllowedScopes = { "user_api.internal" }, // 只能访问user_api
+                RequireClientSecret = true, // 必须提供客户端密钥
+                RequirePkce = false,        // 不需要PKCE（仅用于授权码流）
+                AllowOfflineAccess = false, // 不允许离线访问（不需要刷新令牌）
+                AllowAccessTokensViaBrowser = false, // 不允许通过浏览器获取访问令牌
+                
+                Claims =
+                {
+                    new ClientClaim("client_type", "microservice"),
+                    new ClientClaim("service_name", "Contact.API")
+                },
                 AccessTokenLifetime = 3600, // 1小时
-                AllowOfflineAccess = false // 不需要刷新令牌
+               
             }
 
         };

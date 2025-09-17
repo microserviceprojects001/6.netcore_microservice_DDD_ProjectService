@@ -152,7 +152,7 @@ namespace Contact.API.Services
                     new KeyValuePair<string, string>("grant_type", "client_credentials"),
                     new KeyValuePair<string, string>("client_id", _clientSettings.ClientId),
                     new KeyValuePair<string, string>("client_secret", _clientSettings.ClientSecret),
-                    new KeyValuePair<string, string>("scope", "user_api")
+                    new KeyValuePair<string, string>("scope", "user_api.internal")
                 });
 
                 // 创建临时HttpClient用于获取令牌

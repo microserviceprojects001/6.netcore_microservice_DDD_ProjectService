@@ -58,7 +58,7 @@ namespace User.API.Controllers
         }
 
         [HttpGet("require-user-api-scope")]
-        [Authorize(Policy = "RequireUserApiScope")]
+        [Authorize(Policy = "RequireInternalAccess")]
         public IActionResult RequireUserApiScopeEndpoint()
         {
             var clientId = User.FindFirstValue("client_id");
