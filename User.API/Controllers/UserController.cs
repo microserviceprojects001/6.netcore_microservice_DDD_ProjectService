@@ -4,6 +4,8 @@ using User.API.Data;
 using User.API.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Authorization;
+using DotNetCore.CAP;
+using Microservice.Contracts.Events;
 
 namespace User.API.Controllers;
 
@@ -12,12 +14,16 @@ namespace User.API.Controllers;
 
 public class UserController : BaseController
 {
+    private readonly ICapPublisher _capBus;
+
     private ILogger<UserController> _logger;
     private readonly UserContext _context;
-    public UserController(UserContext context, ILogger<UserController> logger)
+
+    public UserController(UserContext context, ILogger<UserController> logger, ICapPublisher capBus)
     {
         _logger = logger;
         _context = context;
+        _capBus = capBus;
     }
 
     [Route("")]
@@ -254,9 +260,9 @@ public class UserController : BaseController
             return BadRequest("Invalid patch document.");
         }
 
-        // 关键修改：添加 Include 加载导航属性
+        // 获取用户数据（包含属性）
         var user = await _context.AppUsers
-            .Include(u => u.Properties) // 确保加载属性集合
+            .Include(u => u.Properties)
             .SingleOrDefaultAsync(u => u.Id == UserIdentity.UserId);
 
         if (user == null)
@@ -264,41 +270,60 @@ public class UserController : BaseController
             throw new UserOperationException($"错误的用户上下文Id {UserIdentity.UserId}");
         }
 
-        // 创建原始属性快照（此时已被跟踪）
-        var originalProperties = user.Properties.ToList();
+        // 保存修改前的用户数据
+        var oldName = user.Name;
+        var oldCompany = user.Company;
+        var oldTitle = user.Title;
+        var oldAvatar = user.Avatar;
 
         // 应用补丁修改
         patch.ApplyTo(user);
 
-        // 使用业务键比较变更（而非引用比较）
+        // 检查是否有需要通知的字段变更
+        bool profileChanged = (oldName != user.Name) ||
+                            (oldCompany != user.Company) ||
+                            (oldTitle != user.Title) ||
+                            (oldAvatar != user.Avatar);
+
+        // 处理属性变更
+        var originalProperties = user.Properties.ToList();
         var removedProperties = originalProperties
             .Where(op => !user.Properties.Any(p =>
-                p.Key == op.Key &&
-                p.Value == op.Value))
+                p.Key == op.Key && p.Value == op.Value))
             .ToList();
-
         var newProperties = user.Properties
             .Where(p => !originalProperties.Any(op =>
-                op.Key == p.Key &&
-                p.Value == op.Value))
+                op.Key == p.Key && op.Value == op.Value))
             .ToList();
 
-        // 处理删除和添加
+        // 更新数据库
         foreach (var property in removedProperties)
         {
             _context.UserProperties.Remove(property);
         }
-
         foreach (var property in newProperties)
         {
             _context.UserProperties.Add(property);
         }
 
-        // 不需要调用 Update(user)，因为实体已被跟踪
         await _context.SaveChangesAsync();
+
+        // 如果用户基本信息变更，发送消息
+        if (profileChanged)
+        {
+            _capBus.Publish("user.profile.changed", new UserProfileChangedEvent
+            {
+                UserId = user.Id,
+                Name = "Abel Test",
+                Company = user.Company,
+                Title = user.Title,
+                Avatar = user.Avatar
+            });
+        }
 
         return Ok(user);
     }
+
 
     /// <summary>
     /// 检查或者创建用户(当用户手机号不存在的时候则创建用户)

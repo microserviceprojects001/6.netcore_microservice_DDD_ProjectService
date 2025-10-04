@@ -10,6 +10,8 @@ using Consul;
 using Resilience;
 using Contact.API.Infrastructure;
 using Contact.API.Configuration;
+using DotNetCore.CAP;
+using Contact.API.IntegrationEvents.EventHandling;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -144,6 +146,29 @@ builder.Services.AddAuthorization(options =>
 // ... rest of code ...
 // 修改为使用应用生命周期事件注册
 builder.Services.AddSingleton<ConsulRegistrationService>();
+
+// 添加 CAP 配置（MySQL 版本）
+builder.Services.AddCap(x =>
+{
+    x.UseMySql(builder.Configuration.GetConnectionString("MySQL"));
+    var configuration = builder.Configuration;
+    x.UseRabbitMQ(option =>
+    {
+        option.HostName = configuration["RabbitMQ:HostName"];
+        option.Port = int.Parse(configuration["RabbitMQ:Port"]);
+        option.UserName = configuration["RabbitMQ:UserName"];
+        option.Password = configuration["RabbitMQ:Password"];
+        option.VirtualHost = configuration["RabbitMQ:VirtualHost"];
+
+    });
+    x.FailedRetryCount = 3;
+    x.FailedRetryInterval = 60;
+    x.UseDashboard(opt =>
+    {
+        opt.PathMatch = "/cap"; // Dashboard访问路径
+    });
+});
+builder.Services.AddScoped<UserProfileChangedEventHandler>();
 
 var app = builder.Build();
 

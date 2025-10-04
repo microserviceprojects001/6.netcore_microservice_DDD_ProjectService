@@ -9,6 +9,8 @@ using User.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer; // 添加这个
 using Microsoft.IdentityModel.Tokens; // 添加这个
 using System.IdentityModel.Tokens.Jwt;
+using DotNetCore.CAP;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,6 +87,28 @@ builder.Services.AddAuthorization(options =>
     }));
 });
 
+// 添加 CAP 配置（MySQL 版本）
+builder.Services.AddCap(x =>
+{
+    x.UseEntityFramework<UserContext>();
+    var configuration = builder.Configuration;
+    x.UseRabbitMQ(option =>
+    {
+        option.HostName = configuration["RabbitMQ:HostName"];
+        option.Port = int.Parse(configuration["RabbitMQ:Port"]);
+        option.UserName = configuration["RabbitMQ:UserName"];
+        option.Password = configuration["RabbitMQ:Password"];
+        option.VirtualHost = configuration["RabbitMQ:VirtualHost"];
+
+    });
+    x.FailedRetryCount = 3;
+    x.FailedRetryInterval = 60;
+    x.UseDashboard(opt =>
+    {
+        opt.PathMatch = "/cap"; // Dashboard访问路径
+    });
+});
+
 var app = builder.Build();
 
 // 初始化数据库
@@ -99,6 +123,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 app.MapHealthChecks("/HealthCheck");
 

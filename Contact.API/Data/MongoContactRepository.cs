@@ -67,6 +67,7 @@ public class MongoContactRepository : IContactRepository
     /// <exception cref="Exception"></exception>
     public async Task<bool> UpdateContactInfoAsync(UserIdentity userInfo, CancellationToken cancellationToken = default)
     {
+        Console.WriteLine($"[{DateTime.Now}] UpdateContactInfoAsync 函数执行");
         var contactBook = await _contactContext.ContactBooks
                                                 .Find(cb => cb.UserId == userInfo.UserId)
                                                 .FirstOrDefaultAsync(cancellationToken);
