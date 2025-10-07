@@ -314,6 +314,7 @@ public class UserController : BaseController
 
                 await _context.SaveChangesAsync();
 
+                profileChanged = true;
                 // 如果用户基本信息变更，发送消息（在事务中）
                 if (profileChanged)
                 {

@@ -15,6 +15,8 @@ namespace Contact.API.IntegrationEvents.EventHandling
             _contactRepository = contactRepository;
         }
 
+        // debug代码是，与正常跟代码的方式是一样的，contact.API run debug 起来，user.API dotnetrun起来，
+        // post man调用user.API的更新用户接口
         [CapSubscribe("user.profile.changed")]
         public async Task Handle(UserProfileChangedEvent @event)
         {
