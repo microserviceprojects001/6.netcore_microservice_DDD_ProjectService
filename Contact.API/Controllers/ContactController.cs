@@ -107,7 +107,7 @@ public class ContactController : BaseController
 
     [HttpPut]
     [Route("apply-requests/{applierId}")]
-    [Authorize(Policy = "Contact.Write")]
+    [Authorize(Policy = "Contact.Write")] /// 此处基于角色的人认证示例
     public async Task<IActionResult> ApprovalRequestAsync(int applierId, CancellationToken cancellationToken = default)
     {
         var result = await _contactApplyRequestRepository.ApprovalAsync(UserIdentity.UserId, applierId, cancellationToken); //就是谁申请人的id

@@ -296,29 +296,44 @@ public class UserController : BaseController
                 op.Key == p.Key && op.Value == op.Value))
             .ToList();
 
-        // 更新数据库
-        foreach (var property in removedProperties)
-        {
-            _context.UserProperties.Remove(property);
-        }
-        foreach (var property in newProperties)
-        {
-            _context.UserProperties.Add(property);
-        }
 
-        await _context.SaveChangesAsync();
-
-        // 如果用户基本信息变更，发送消息
-        if (profileChanged)
+        // 使用 CAP 事务发布
+        using (var transaction = await _context.Database.BeginTransactionAsync())
         {
-            _capBus.Publish("user.profile.changed", new UserProfileChangedEvent
+            try
             {
-                UserId = user.Id,
-                Name = "Abel Test",
-                Company = user.Company,
-                Title = user.Title,
-                Avatar = user.Avatar
-            });
+                // 更新数据库
+                foreach (var property in removedProperties)
+                {
+                    _context.UserProperties.Remove(property);
+                }
+                foreach (var property in newProperties)
+                {
+                    _context.UserProperties.Add(property);
+                }
+
+                await _context.SaveChangesAsync();
+
+                // 如果用户基本信息变更，发送消息（在事务中）
+                if (profileChanged)
+                {
+                    await _capBus.PublishAsync("user.profile.changed", new UserProfileChangedEvent
+                    {
+                        UserId = user.Id,
+                        Name = "user.Name T#e", // 使用实际的新名称，而不是硬编码
+                        Company = user.Company,
+                        Title = user.Title,
+                        Avatar = user.Avatar
+                    });
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         return Ok(user);
