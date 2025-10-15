@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using System.ComponentModel.DataAnnotations.Schema;
 // Domain/Orders/Order.cs
 namespace Domain.Orders
 {
@@ -204,28 +204,7 @@ namespace Domain.Orders
         }
     }
 
-    // 实体基类
-    public abstract class Entity
-    {
-        private List<IDomainEvent> _domainEvents;
-        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents?.AsReadOnly();
 
-        public void AddDomainEvent(IDomainEvent eventItem)
-        {
-            _domainEvents ??= new List<IDomainEvent>();
-            _domainEvents.Add(eventItem);
-        }
-
-        public void RemoveDomainEvent(IDomainEvent eventItem)
-        {
-            _domainEvents?.Remove(eventItem);
-        }
-
-        public void ClearDomainEvents()
-        {
-            _domainEvents?.Clear();
-        }
-    }
 
     // 聚合根标记接口
     public interface IAggregateRoot { }
