@@ -15,11 +15,13 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
-            // 注册仓储
-            services.AddScoped<IOrderRepository, OrderRepository>();
+            // ✅ Scoped生命周期：每个HTTP请求一个实例
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(connectionString),
+                ServiceLifetime.Scoped);  // 关键配置！
 
-            // 注册领域事件发布器
-            services.AddScoped<IDomainEventPublisher, DomainEventPublisher>();
+            services.AddScoped<IOrderRepository, OrderRepository>();      // Scoped
+            services.AddScoped<IDomainEventPublisher, DomainEventPublisher>(); // Scoped
 
             return services;
         }
