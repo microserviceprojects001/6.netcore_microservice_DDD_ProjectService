@@ -43,7 +43,8 @@ namespace Domain.Orders
                 Id = OrderId.New(),
                 CustomerId = customerId,
                 ShippingAddress = shippingAddress,
-                Status = OrderStatus.Created,
+                Status = OrderStatus.Created
+                ,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
