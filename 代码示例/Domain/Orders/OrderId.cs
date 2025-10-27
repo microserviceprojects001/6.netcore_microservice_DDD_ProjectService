@@ -56,6 +56,9 @@ namespace Domain.Orders
         // 隐式转换到字符串
         public static implicit operator string(OrderId id) => id.ToString();
 
+        // 添加：隐式转换从字符串
+        public static implicit operator OrderId(string value) => From(value);
+
         // 重写ToString
         public override string ToString() => Value.ToString();
 
